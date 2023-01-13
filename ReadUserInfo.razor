@@ -1,0 +1,29 @@
+﻿@page "/readuserinfo"
+@using ComponentCommunication1070666.Data
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Newtonsoft.Json
+@inject ProtectedSessionStorage MyStore
+<h3>Read User Info</h3>
+<br />
+<button @onclick="ReadUserInfoFromSession">Read User Info</button>
+<br />
+<p>@Msg</p>
+@code {
+    string Msg = "";
+    async void ReadUserInfoFromSession()
+    {
+        var json = await MyStore.GetAsync<string>("UINFO");
+        string jsonstr = json.Value;
+        if (jsonstr != null)
+        {
+            UserInfo uinfo = JsonConvert.DeserializeObject<UserInfo>(jsonstr);
+            Msg = "Data Read = " + uinfo.UserName + " Email: " + uinfo.Email;
+            await InvokeAsync(() => StateHasChanged());
+        }
+        else
+        {
+            Msg = "No data found..";
+            await InvokeAsync(() => StateHasChanged());
+        }
+    }
+}

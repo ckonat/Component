@@ -1,0 +1,27 @@
+﻿@page "/counterrp/{initialcount}"
+@page "/counterrp/{initialcount}/{incby}"
+<h3>CounterRP1070666</h3>
+<button class="btn btn-primary" @onclick="IncrementCount">Increment Count</button>
+<br />
+<p>Current Count = @currentCount</p>
+@code {
+    int currentCount = 0;
+    // route parameters need to marked with regular [Parameter] attribute
+    // [Parameter] attribute requires the variable to be declared as a property
+    [Parameter]
+    public string incby { get; set; }
+    [Parameter]
+    public string initialcount { get; set; }
+    protected override void OnInitialized()
+    {
+        currentCount = int.Parse(initialcount);
+    }
+    void IncrementCount()
+    {
+        if (incby != null)
+            currentCount = currentCount + int.Parse(incby);
+        else
+            currentCount = currentCount + 1;
+    }
+}
+

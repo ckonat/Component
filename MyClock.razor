@@ -1,0 +1,65 @@
+﻿@page "/myclock"
+@using System.Timers
+@implements IDisposable
+<h3>MyClock</h3>
+<div style="border:1px solid red;width:300px;font-size:16pt;fontweight:bold;color:green">
+ <p>@CurrentTime</p>
+ <p>Elapsed Seconds: @ElapsedSeconds</p>
+ <button @onclick="StartTimer" class="btn btn-success">Start Timer</button>
+ &nbsp;&nbsp;&nbsp;&nbsp;
+ <button @onclick="StopTimer" class="btn btn-danger">Stop Timer</button>
+</div>
+@code {
+ string? CurrentTime;
+ int ElapsedSeconds = 0;
+ Timer timer;
+ bool startTimer = false;
+ [Parameter]
+ public EventCallback<int> OnTenSecondsElapsed { get; set; } // parent will subscribe to this event
+ [Parameter]
+ public EventCallback<int> OnTwentySecondsElapsed { get; set; } // parent will subscribe to this event
+ [Parameter]
+ public EventCallback<int> OnTimerStarted { get; set; } // parent will subscribe to this event
+ // this component will trigger the above events, and the parent will handle the events
+ protected override void OnAfterRender(bool firstRender) {
+ if (firstRender)
+ {
+ timer = new Timer();
+ timer.Interval = 1000; // milliseconds
+ timer.Elapsed += OnTimeInterval; // event handler for timer 
+ timer.AutoReset = true;
+ timer.Enabled = true;
+ }
+ }
+ async void OnTimeInterval(object sender, ElapsedEventArgs e)
+ {
+ CurrentTime = DateTime.Now.ToShortTimeString();
+ if (startTimer)
+        {
+            ElapsedSeconds = ElapsedSeconds + 1;
+            if (ElapsedSeconds == 10)
+                await InvokeAsync(() =>
+               OnTenSecondsElapsed.InvokeAsync(ElapsedSeconds)); // fire event
+            if (ElapsedSeconds == 20)
+                await InvokeAsync(() =>
+               OnTwentySecondsElapsed.InvokeAsync(ElapsedSeconds)); // fire event
+        }
+        //StateHasChanged();
+        await InvokeAsync(() => StateHasChanged()); // update UI
+    }
+    async void StartTimer()
+    {
+        ElapsedSeconds = 0;
+        startTimer = true;
+        await InvokeAsync(() => OnTimerStarted.InvokeAsync()); // notify parenttimer has started
+    }
+    public void StopTimer()
+    {
+        ElapsedSeconds = 0;
+        startTimer = false;
+    }
+    public void Dispose()
+    {
+        timer?.Dispose();
+    }
+}

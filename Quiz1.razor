@@ -1,0 +1,52 @@
+﻿@page "/quiz1"
+<h3>Quiz1</h3>
+<br/>
+<MyClock @ref="myclock" OnTenSecondsElapsed="TenSecondsOver"
+ OnTwentySecondsElapsed="TwentySecondsOver" OnTimerStarted="TimerStarted"/>
+<br/>
+<div style="border:1px solid red;background-color:@bcolor;width:300px">
+ <span style="color:@textColor">@msg</span>
+</div>
+<div style="display:@vis">
+<p>What is the area of a circle with radius 100?</p>
+<form>
+ Answer: <input @bind=answer/>
+ <input type="button" @onclick="AnswerSubmitted" value="Submit Answer"/>
+</form>
+</div>
+@code {
+ MyClock myclock;
+ string? answer;
+    string vis = "none";
+    string? msg;
+    string textColor = "green";
+    string? bcolor = "white";
+    public void TenSecondsOver(int elapsedSeconds)
+    {
+        msg = $"{elapsedSeconds} seconds have elapsed";
+        textColor = "yellow";
+        bcolor = "orange";
+    }
+    public void TwentySecondsOver(int elapsedSeconds)
+    {
+        msg = $"{elapsedSeconds} seconds have elapsed";
+        textColor = "yellow";
+        bcolor = "red";
+        myclock.StopTimer();
+        vis = "none";
+    }
+    public void TimerStarted()
+    {
+        msg = "timer started, you have 20 seconds..";
+        textColor = "green";
+        bcolor = "white";
+        vis = "block"; // display question and the answering text box
+    }
+    void AnswerSubmitted()
+    {
+        myclock.StopTimer();
+        msg = "Answer submitted..";
+        vis = "none";
+    }
+}
+

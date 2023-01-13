@@ -1,0 +1,24 @@
+﻿@page "/storelocal"
+@using ComponentCommunication1070666.Data
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Newtonsoft.Json
+@inject ProtectedLocalStorage MyStore
+<h3>Set User Info</h3>
+<br />
+<button @onclick="StoreUserInfo">Store User Info</button>
+<br />
+<p>@Msg</p>
+@code {
+    string Msg = "";
+    void StoreUserInfo()
+    {
+        UserInfo uinfo = new UserInfo
+            {
+                UserName = "sally",
+                Email = "sally@yahoo.com"
+            };
+        string json = JsonConvert.SerializeObject(uinfo);
+        MyStore.SetAsync("UINFOLOCAL", json);
+        Msg = "user info stored in local storage";
+    }
+}

@@ -1,0 +1,41 @@
+﻿@page "/counterlc"
+@using ComponentCommunication1070666.Utils
+@inject NavigationManager navManager
+implements IDisposable
+<h3>CounterLC</h3>
+<button class="btn btn-primary" @onclick="IncrementCount">Increment Count</button>
+<br />
+<p>Current Count = @currentCount</p>
+<br />
+<br />
+<a href="/counterlc?initialcount=25">Start Counter at 25</a>
+<br />
+<a href="/counterlc?initialcount=50">Start Counter at 50</a>
+<br />
+<a href="/counterlc?initialcount=100">Start Counter at 100</a>
+<br />
+@code {
+    int currentCount = 0;
+    protected override void OnInitialized()
+    {
+        GetQueryStringValues();
+        navManager.LocationChanged += HandleLocationChanged; // attach eventhandler
+    }
+    void GetQueryStringValues()
+    {
+        navManager.TryGetQueryString<int>("initialcount", out currentCount);
+    }
+    void HandleLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        GetQueryStringValues();
+        StateHasChanged();
+    }
+    void IncrementCount()
+    {
+        currentCount = currentCount + 1;
+    }
+    public void Dispose()
+    {
+        navManager.LocationChanged -= HandleLocationChanged;
+    }
+}

@@ -1,0 +1,23 @@
+﻿@page "/passdataviaqs"
+@using Microsoft.AspNetCore.WebUtilities
+@inject NavigationManager navManager
+<h3>PassDataViaQS</h3>
+<EditForm Model="this">
+ Initial Count <input @bind="initialcount"/> <br/>
+ Increment By <input @bind="incby"/> <br/>
+ <button @onclick="CallCounterQS">Call CounterQS</button>
+</EditForm>
+@code {
+ int initialcount = 0;
+    int incby = 0;
+    void CallCounterQS()
+    {
+        var query = new Dictionary<string, string>
+ {
+ {"initialcount", initialcount.ToString()},
+ {"incby", incby.ToString()}
+ };
+        navManager.NavigateTo(QueryHelpers.AddQueryString("/counterqs2",query));
+    }
+}
+

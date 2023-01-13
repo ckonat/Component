@@ -1,0 +1,32 @@
+﻿@page "/counterqs1070666"
+@using Microsoft.AspNetCore.WebUtilities
+@using Microsoft.Extensions.Primitives
+@inject NavigationManager navManager // for query string or url routing
+<h3>Counter Query String</h3>
+<br />
+<button class="btn btn-primary" @onclick="IncrementCount">Increment Count</button>
+<p>Current Count = @currentCount</p>
+@code {
+    int currentCount = 0;
+    int incby; // query string parameter
+    int initialcount; // query string parameter
+    protected override void OnInitialized()
+    {
+        StringValues initCount;
+        StringValues incBy;
+        var uri = navManager.ToAbsoluteUri(navManager.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("initialcount", out
+       initCount))
+        {
+            currentCount = int.Parse(initCount);
+        }
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("incby", out incBy))
+        {
+            incby = int.Parse(incBy);
+        }
+    }
+    void IncrementCount()
+    {
+        currentCount = currentCount + incby;
+    }
+}
